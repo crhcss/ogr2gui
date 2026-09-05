@@ -39,6 +39,30 @@
 #include <QTranslator>
 #include <QUrl>
 
+// Build a file-dialog filter for formats whose extension list may contain
+// several space-separated extensions (e.g. GeoJSON: "geojson txt json").
+static QString buildFileFilter( const QString &name, const QString &exts )
+{
+	QStringList list = exts.split( ' ', Qt::SkipEmptyParts );
+	QString globs;
+	for( int i = 0; i < list.size(); i++ )
+	{
+		if( i > 0 ) globs += ' ';
+		globs += "*." + list.at( i );
+	}
+	return name + " (" + globs + ")";
+}
+
+// Build a QDir entryList glob list from a space-separated extension list.
+static QStringList buildGlobList( const QString &exts )
+{
+	QStringList globs;
+	QStringList list = exts.split( ' ', Qt::SkipEmptyParts );
+	for( int i = 0; i < list.size(); i++ )
+		globs.append( "*." + list.at( i ) );
+	return globs;
+}
+
 App::App( QWidget *widget ) : QMainWindow( widget )
 {
 	InitData();
@@ -741,7 +765,7 @@ void App::evtBtnSourceName( void )
 
 	if( radSourceFile->isChecked() )
 	{
-		type = tr( "\"" ) + formats[ idx ][ 0 ] + tr( "\" | *." ) + formats[ idx ][ 1 ];
+		type = buildFileFilter( formats[ idx ][ 0 ], formats[ idx ][ 1 ] );
 
 		txtSourceName->setText( QFileDialog::getOpenFileName( this, tr( "Source File" ), tr( "" ), type ) );
 
@@ -751,15 +775,11 @@ void App::evtBtnSourceName( void )
 	}
 	else if( radSourceFolder->isChecked() )
 	{
-		QStringList types;
-
-		type = tr( "*." ) + formats[ cmbSourceFormat->currentIndex() ][ 1 ];
+		QStringList types = buildGlobList( formats[ cmbSourceFormat->currentIndex() ][ 1 ] );
 
 		txtSourceName->setText( QFileDialog::getExistingDirectory( this, tr( "Source Folder" ), tr( "" ), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks ) );
 
 		QDir dir( txtSourceName->text() );
-
-		types.append( type );
 
 		QStringList list = dir.entryList( types );
 
@@ -936,7 +956,7 @@ void App::evtBtnTargetName( void )
 	}
 	else
 	{
-		type = tr( "\"" ) + formats[ idx ][ 0 ] + tr( "\" | *." ) + formats[ idx ][ 1 ];
+		type = buildFileFilter( formats[ idx ][ 0 ], formats[ idx ][ 1 ] );
 
 		txtTargetName->setText( QFileDialog::getSaveFileName( this, tr( "Target File" ), tr( "" ), type ) );
 	}

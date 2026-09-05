@@ -28,16 +28,16 @@
  */
 
 formats[  0 ][ 0 ] = "ESRI Shapefile";		formats[  0 ][ 1 ] = "shp";
-formats[  1 ][ 0 ] = "MapInfo File";		formats[  1 ][ 1 ] = "tab";
-formats[  2 ][ 0 ] = "BNA";					formats[  2 ][ 1 ] = "bna";
-formats[  3 ][ 0 ] = "CSV";					formats[  3 ][ 1 ] = "csv";
-formats[  4 ][ 0 ] = "GML";					formats[  4 ][ 1 ] = "gml";
-formats[  5 ][ 0 ] = "KML";					formats[  5 ][ 1 ] = "kml";
-formats[  6 ][ 0 ] = "GMT";					formats[  6 ][ 1 ] = "gmt";
-formats[  7 ][ 0 ] = "GPX";					formats[  7 ][ 1 ] = "gpx";
-formats[  8 ][ 0 ] = "Geoconcept";			formats[  8 ][ 1 ] = "gxt";
-formats[  9 ][ 0 ] = "FMEObjects Gateway";	formats[  9 ][ 1 ] = "fdd";
-formats[ 10 ][ 0 ] = "GeoJSON";				formats[ 10 ][ 1 ] = "txt";
+formats[  1 ][ 0 ] = "GeoJSON";					formats[  1 ][ 1 ] = "geojson txt json";
+formats[  2 ][ 0 ] = "MapInfo File";		formats[  2 ][ 1 ] = "tab";
+formats[  3 ][ 0 ] = "BNA";					formats[  3 ][ 1 ] = "bna";
+formats[  4 ][ 0 ] = "CSV";					formats[  4 ][ 1 ] = "csv";
+formats[  5 ][ 0 ] = "GML";					formats[  5 ][ 1 ] = "gml";
+formats[  6 ][ 0 ] = "KML";					formats[  6 ][ 1 ] = "kml";
+formats[  7 ][ 0 ] = "GMT";					formats[  7 ][ 1 ] = "gmt";
+formats[  8 ][ 0 ] = "GPX";					formats[  8 ][ 1 ] = "gpx";
+formats[  9 ][ 0 ] = "Geoconcept";			formats[  9 ][ 1 ] = "gxt";
+formats[ 10 ][ 0 ] = "FMEObjects Gateway";	formats[ 10 ][ 1 ] = "fdd";
 formats[ 11 ][ 0 ] = "UK. NTF";				formats[ 11 ][ 1 ] = "ntf";
 formats[ 12 ][ 0 ] = "XPlane";				formats[ 12 ][ 1 ] = "dat";
 

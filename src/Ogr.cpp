@@ -31,7 +31,8 @@
 
 #include <cstdio>
 
-// GDAL error API (CPLGetLastErrorMsg)
+// GDAL config + error API
+#include <cpl_conv.h>
 #include <cpl_error.h>
 
 // MSVC does not provide the POSIX S_ISDIR macro
@@ -54,6 +55,11 @@ Ogr::Ogr( void ) :
 	sourceGeom( NULL ),
 	targetLayerWasExisting( false )
 {
+	// ogr2gui passes UTF-8 strings (QString::toStdString) to GDAL. Without
+	// this, GDAL interprets non-ASCII paths as the ANSI codepage on Windows
+	// and fails to open files whose name contains Chinese characters.
+	CPLSetConfigOption( "GDAL_FILENAME_IS_UTF8", "YES" );
+
 	OGRRegisterAll();
 }
 

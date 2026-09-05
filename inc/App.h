@@ -86,7 +86,7 @@ class App : public QMainWindow
 		QString **formats;
 		
 		// output formats
-		const static int formatsOutput = 9;
+	const static int formatsOutput = 10;
 
 		// database formats
 		const static int databasesCount = 5;
