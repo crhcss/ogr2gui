@@ -31,6 +31,9 @@
 
 #include <cstdio>
 
+// GDAL error API (CPLGetLastErrorMsg)
+#include <cpl_error.h>
+
 // MSVC does not provide the POSIX S_ISDIR macro
 #if defined(_WIN32) && !defined(S_ISDIR)
 #include <sys/stat.h>
@@ -312,7 +315,10 @@ bool Ogr::Prepare( int &featuresCount, const string &query )
 			continue;
 		}
 
-		if( Error( OGR_L_CreateField( targetLayer, field, 0 ), error ) )
+		// bApproxOK=1 lets the driver approximate (e.g. SHP truncates field names
+		// to 10 chars), matching ogr2ogr CLI behaviour. With 0, GDAL 3.x strictly
+		// rejects over-long field names and the whole conversion fails.
+		if( Error( OGR_L_CreateField( targetLayer, field, 1 ), error ) )
 		{
 			return false;
 		}
@@ -444,6 +450,15 @@ bool Ogr::Error( OGRErr code, string &type )
 			type = "unknown";
 		}
 		break;
+	}
+
+	// Append GDAL's own last error so the UI shows the real reason
+	// (e.g. "Failed to add field named '...'") instead of a bare "failure".
+	const char *detail = CPLGetLastErrorMsg();
+	if( detail != NULL && detail[ 0 ] != '\0' )
+	{
+		type += " - ";
+		type += detail;
 	}
 
 	return true;
