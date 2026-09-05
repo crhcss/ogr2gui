@@ -105,7 +105,9 @@ bool Ogr::OpenSource( string filename, string &epsg, string &query, string &erro
 				error = "unable to open source spatial reference";
 			}
 
-			query = "SELECT * FROM " + sourceLayerName;
+			// Quote the layer name so a Chinese (or otherwise non-ASCII) layer name is
+			// still parsed as a single SQL identifier by OGR SQL.
+			query = "SELECT * FROM \"" + sourceLayerName + "\"";
 		}
 		else
 		{
@@ -241,7 +243,11 @@ bool Ogr::OpenTarget( const string &filename, int projection, bool update )
 		if( targetLayer == NULL )
 		{
 			OGRSpatialReferenceH layerSRS = targetSRS != NULL ? targetSRS : sourceSRS;
-			targetLayer = OGR_DS_CreateLayer( targetData, sourceLayerName.c_str(), layerSRS, sourceLayerGeom, NULL );
+
+			// ENCODING=UTF-8 makes the SHP driver write Chinese field names and
+			// values as UTF-8 instead of the default ISO-8859-1 (which produced '?').
+			char *layerOptions[] = { (char*)"ENCODING=UTF-8", NULL };
+			targetLayer = OGR_DS_CreateLayer( targetData, sourceLayerName.c_str(), layerSRS, sourceLayerGeom, layerOptions );
 		}
 	}
 	else
@@ -270,6 +276,32 @@ bool Ogr::CloseTarget( void )
 
 	if( targetData != NULL )
 	{
+		// Write a UTF-8 .cpg sidecar for Shapefile so ArcGIS/QGIS show
+		// Chinese field names and values correctly.
+		if( formatDriver != NULL )
+		{
+			const char *driverName = OGR_Dr_GetName( formatDriver );
+
+			if( driverName != NULL && string( driverName ) == "ESRI Shapefile" )
+			{
+				string cpgName = targetName;
+				string::size_type dot = cpgName.rfind( '.' );
+
+				if( dot != string::npos )
+					cpgName.resize( dot );
+
+				cpgName += ".cpg";
+
+				VSILFILE *cpg = VSIFOpenL( cpgName.c_str(), "wb" );
+
+				if( cpg != NULL )
+				{
+					VSIFWriteL( "UTF-8", 1, 5, cpg );
+					VSIFCloseL( cpg );
+				}
+			}
+		}
+
 		OGR_DS_Destroy( targetData );
 		targetData = NULL;
 		targetLayer = NULL;
