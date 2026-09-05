@@ -31,6 +31,12 @@
 
 #include <cstdio>
 
+// MSVC does not provide the POSIX S_ISDIR macro
+#if defined(_WIN32) && !defined(S_ISDIR)
+#include <sys/stat.h>
+#define S_ISDIR(m) (((m) & _S_IFDIR) != 0)
+#endif
+
 Ogr::Ogr( void ) :
 	formatDriver( NULL ),
 	sourceData( NULL ),
